@@ -2,24 +2,31 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Bantu Nyu bertemu dengan Nje!</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-*{box-sizing:border-box;margin:0;padding:0;image-rendering:pixelated}
+*{box-sizing:border-box;margin:0;padding:0;image-rendering:pixelated;
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation}
+html,body{overflow-x:hidden;height:100%}
 body{background:linear-gradient(160deg,#f5c9d4 0%,#e8b8a0 100%);min-height:100vh}
 #app{display:flex;flex-direction:column;align-items:center;padding:1rem 0;gap:10px;font-family:'Press Start 2P',monospace;min-height:100vh}
 #title{font-family:'Press Start 2P',monospace;font-size:8px;color:#5a2d1a;text-align:center;line-height:2.2;padding:8px 12px;background:rgba(255,255,255,0.35);border:2px solid #c47a8a}
 #hud{display:flex;gap:14px;align-items:center;font-family:'Press Start 2P',monospace;font-size:7px;color:#7a3d2a;background:rgba(255,255,255,0.3);padding:6px 12px;border:2px solid #c47a8a}
 .hud-item{display:flex;flex-direction:column;align-items:center;gap:3px}
 .hud-val{color:#3a1a0a;font-size:9px}
-#canvas-wrap{position:relative}
-canvas{display:block;border:4px solid #5a2d1a}
+#canvas-wrap{position:relative;touch-action:none}
+canvas{display:block;border:4px solid #5a2d1a;touch-action:none}
 #overlay{position:absolute;inset:0;background:rgba(80,20,30,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-#overlay button{font-family:'Press Start 2P',monospace;font-size:8px;background:#ffd6e0;color:#5a1a2a;border:none;padding:8px 16px;cursor:pointer}
+#overlay button{font-family:'Press Start 2P',monospace;font-size:8px;background:#ffd6e0;color:#5a1a2a;border:none;padding:8px 16px;cursor:pointer;touch-action:manipulation}
 #items-bar{display:flex;gap:8px;align-items:center;font-family:'Press Start 2P',monospace;font-size:7px;color:#7a3d2a;background:rgba(255,255,255,0.3);padding:6px 10px;border:2px solid #c47a8a}
 .item-pill{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.4);padding:4px 8px;border:2px solid #c47a8a}
-#dpad-canvas{display:block;cursor:pointer;image-rendering:pixelated;margin-top:6px}
+#dpad-canvas{display:block;cursor:pointer;image-rendering:pixelated;margin-top:6px;touch-action:none;-webkit-user-select:none;user-select:none}
 </style>
 </head>
 <body>
@@ -47,6 +54,14 @@ canvas{display:block;border:4px solid #5a2d1a}
 </div>
 
 <script>
+// Prevent ALL default touch behaviors that cause zoom/copy/callout
+document.addEventListener('touchstart', e => { if(e.touches.length > 1) e.preventDefault(); }, {passive: false});
+document.addEventListener('touchmove', e => e.preventDefault(), {passive: false});
+document.addEventListener('gesturestart', e => e.preventDefault(), {passive: false});
+document.addEventListener('gesturechange', e => e.preventDefault(), {passive: false});
+document.addEventListener('gestureend', e => e.preventDefault(), {passive: false});
+document.addEventListener('contextmenu', e => e.preventDefault());
+
 const C=document.getElementById('c');
 const ctx=C.getContext('2d');
 ctx.imageSmoothingEnabled=false;
@@ -76,8 +91,7 @@ function genMaze(seed){
     for(const[dr,dc]of dirs){
       const nr=r+dr,nc=c+dc;
       if(nr>0&&nr<ROWS-1&&nc>0&&nc<COLS-1&&g[nr][nc]===1){
-        g[r+dr/2][c+dc/2]=0;
-        carve(nr,nc);
+        g[r+dr/2][c+dc/2]=0;carve(nr,nc);
       }
     }
   }
@@ -86,8 +100,7 @@ function genMaze(seed){
   const entries=[[GR-2,GC],[GR+2,GC],[GR,GC-2],[GR,GC+2]];
   for(const[er,ec]of entries){
     if(er>0&&er<ROWS-1&&ec>0&&ec<COLS-1&&g[er][ec]===0){
-      g[(er+GR)/2][(ec+GC)/2]=0;
-      break;
+      g[(er+GR)/2][(ec+GC)/2]=0;break;
     }
   }
   let hasEntry=false;
@@ -174,7 +187,7 @@ function showOverlay(btn,cb){
       <div style="color:#f9c0d0;font-size:8px;margin-top:4px">&hearts; Musim Mekarnya Rasa &hearts;</div>
     </div>
     <p style="font-family:'Press Start 2P',monospace;font-size:7px;color:#ffd6e0;text-align:center;line-height:2">WM:${collected.wm} CUP:${collected.cp}</p>
-    <button style="font-family:'Press Start 2P',monospace;font-size:8px;background:#ffd6e0;color:#5a1a2a;border:none;padding:8px 16px;cursor:pointer" onclick="overlayAction()">${btn}</button>`;
+    <button style="font-family:'Press Start 2P',monospace;font-size:8px;background:#ffd6e0;color:#5a1a2a;border:none;padding:8px 16px;cursor:pointer;touch-action:manipulation" onclick="overlayAction()">${btn}</button>`;
   ov.style.display='flex';window._oa=cb;
 }
 window.overlayAction=function(){document.getElementById('overlay').style.display='none';if(window._oa)window._oa();};
@@ -321,12 +334,14 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='ArrowRight'||e.key==='d')tryMove(0,1);
 });
 
+// ── D-PAD ────────────────────────────────────────────────
 const dc=document.getElementById('dpad-canvas');
 const dctx=dc.getContext('2d');
 dctx.imageSmoothingEnabled=false;
 const PX=50,BTN_NORM='#c47a8a',BTN_PRESS='#f9c0d0',BTN_BORDER='#3a1a0a';
 const ARMS={up:{gx:1,gy:0},left:{gx:0,gy:1},center:{gx:1,gy:1},right:{gx:2,gy:1},down:{gx:1,gy:2}};
 let dpPressed=null,dpRepeat=null;
+
 function drawDpad(pressed){
   dctx.clearRect(0,0,150,150);
   Object.entries(ARMS).forEach(([dir,{gx,gy}])=>{
@@ -344,32 +359,45 @@ function drawDpad(pressed){
     pts.forEach(([px2,py2])=>dctx.fillRect(cx+px2*B-B/2,cy+py2*B-B/2,B,B));
   });
 }
+
 function getArm(ex,ey){
   const gx=Math.floor(ex/PX),gy=Math.floor(ey/PX);
   return Object.entries(ARMS).find(([,v])=>v.gx===gx&&v.gy===gy)?.[0]||null;
 }
 const DDIR={up:[-1,0],down:[1,0],left:[0,-1],right:[0,1]};
+
 function pressArm(dir){
   if(!dir||dir==='center')return;
   const[dr,dc2]=DDIR[dir];tryMove(dr,dc2);dpPressed=dir;drawDpad(dir);
 }
 function releaseDP(){dpPressed=null;clearInterval(dpRepeat);dpRepeat=null;drawDpad(null);}
+
+// Use pointer events only — no touch events, avoids ALL browser touch defaults
 dc.addEventListener('pointerdown',e=>{
+  e.preventDefault();
   const r=dc.getBoundingClientRect(),sc=dc.width/r.width;
   const dir=getArm((e.clientX-r.left)*sc,(e.clientY-r.top)*sc);
   if(!dir||dir==='center')return;
-  pressArm(dir);clearInterval(dpRepeat);dpRepeat=setInterval(()=>{if(dpPressed)pressArm(dpPressed);},140);
-  dc.setPointerCapture(e.pointerId);e.preventDefault();
+  pressArm(dir);
+  clearInterval(dpRepeat);
+  dpRepeat=setInterval(()=>{if(dpPressed)pressArm(dpPressed);},140);
+  dc.setPointerCapture(e.pointerId);
 },{passive:false});
+
 dc.addEventListener('pointermove',e=>{
+  e.preventDefault();
   if(!dpPressed)return;
   const r=dc.getBoundingClientRect(),sc=dc.width/r.width;
   const dir=getArm((e.clientX-r.left)*sc,(e.clientY-r.top)*sc);
-  if(dir&&dir!=='center'&&dir!==dpPressed){clearInterval(dpRepeat);pressArm(dir);dpRepeat=setInterval(()=>{if(dpPressed)pressArm(dpPressed);},140);}
-  e.preventDefault();
+  if(dir&&dir!=='center'&&dir!==dpPressed){
+    clearInterval(dpRepeat);pressArm(dir);
+    dpRepeat=setInterval(()=>{if(dpPressed)pressArm(dpPressed);},140);
+  }
 },{passive:false});
-dc.addEventListener('pointerup',releaseDP);
-dc.addEventListener('pointercancel',releaseDP);
+
+dc.addEventListener('pointerup', e=>{e.preventDefault();releaseDP();},{passive:false});
+dc.addEventListener('pointercancel', e=>{e.preventDefault();releaseDP();},{passive:false});
+
 drawDpad(null);
 </script>
 </body>
