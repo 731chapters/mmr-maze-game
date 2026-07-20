@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Let NIDJAE married!</title>
+    <title>Bantu Nyu bertemu dengan Nje!</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
@@ -146,7 +146,7 @@
 
 <body>
     <div id="app">
-        <div id="title">Let NIDJAE married!</div>
+        <div id="title">Bantu Nyu bertemu dengan Nje!</div>
         <div id="hud">
             <div class="hud-item"><span>MAZE</span><span class="hud-val" id="maze-num">1/20</span></div>
             <div class="hud-item"><span>STEPS</span><span class="hud-val" id="steps">0</span></div>
@@ -162,10 +162,10 @@
             <div id="overlay">
                 <h2
                     style="font-family:'Press Start 2P',monospace;font-size:9px;color:#ffd6e0;text-align:center;line-height:2.2">
-                    Let NIDJAE married!</h2>
+                    Bantu Nyu<br>bertemu<br>dengan Nje!</h2>
                 <p
                     style="font-family:'Press Start 2P',monospace;font-size:7px;color:#e8b8c8;text-align:center;line-height:2">
-                    Youngjae is waiting<br>under the cherry blossoms!</p>
+                    Nje menunggu<br>di bawah sakura!</p>
                 <button onclick="startGame()">START</button>
             </div>
         </div>
@@ -208,7 +208,6 @@
 
         const getCoin = new Audio('./coin.mp3');
         getCoin.volume = 1.0;
-
 
         function seededRand(seed) {
             let s = seed % 2147483647; if (s <= 0) s += 2147483646;
@@ -266,11 +265,13 @@
                 const e = Math.floor((Date.now() - startTime) / 1000);
                 document.getElementById('timer').textContent = Math.floor(e / 60) + ':' + (e % 60 < 10 ? '0' : '') + e % 60;
             }, 500);
+
             bgmAudio.currentTime = 0;
             const playPromise = bgmAudio.play();
             if (playPromise !== undefined) {
                 playPromise.catch(err => console.warn('bgm play failed', err));
             }
+
             loop();
         }
 
@@ -298,8 +299,6 @@
                     it.collected = true;
                     getCoin.currentTime = 0;
                     getCoin.play().catch(() => { });
-
-                    collected[it.type]++;
                     collected[it.type]++;
                     document.getElementById(it.type + '-c').textContent = collected[it.type];
                     document.getElementById('pill-' + it.type).style.opacity = '1';
@@ -311,43 +310,32 @@
 
         function triggerWin() {
             if (married) return;
-            married = true;
-            winAnim = 0;
-
-            // Play success sound while BGM keeps looping
+            married = true; winAnim = 0;
             getYoungjaeAudio.currentTime = 0;
             getYoungjaeAudio.play().catch(
                 err => console.warn('get coin play failed', err)
             );
-
             setTimeout(() => {
                 const isLast = mazeIdx >= 19;
-
-                showOverlay(
-                    isLast ? 'MAIN LAGI' : 'MAZE BERIKUTNYA',
-                    () => {
-                        if (isLast) mazeIdx = 0;
-                        else mazeIdx++;
-
-                        loadMaze();
-                        married = false;
-                        getStart.currentTime = 0;
-                        getStart.play().catch(() => { });
-                    }
-                );
+                showOverlay(isLast ? 'MAIN LAGI' : 'MAZE BERIKUTNYA', () => {
+                    if (isLast) mazeIdx = 0; else mazeIdx++;
+                    loadMaze(); married = false;
+                    getStart.currentTime = 0;
+                    getStart.play().catch(() => { });
+                });
             }, 3200);
         }
 
         function showOverlay(btn, cb) {
             const ov = document.getElementById('overlay');
             ov.innerHTML = `
-      <div style="font-family:'Press Start 2P',monospace;text-align:center;line-height:2.6;padding:0 12px">
-        <div style="color:#FFD700;font-size:11px">SHINYU &amp; YOUNGJAE</div>
-        <div style="color:#FFD700;font-size:11px">AKHIRNYA MENIKAH!</div>
-        <div style="color:#f9c0d0;font-size:8px;margin-top:4px">&hearts; Musim Mekarnya Rasa &hearts;</div>
-      </div>
-      <p style="font-family:'Press Start 2P',monospace;font-size:7px;color:#ffd6e0;text-align:center;line-height:2">WM:${collected.wm} CUP:${collected.cp}</p>
-      <button style="font-family:'Press Start 2P',monospace;font-size:8px;background:#ffd6e0;color:#5a1a2a;border:none;padding:8px 16px;cursor:pointer;touch-action:manipulation" onclick="overlayAction()">${btn}</button>`;
+    <div style="font-family:'Press Start 2P',monospace;text-align:center;line-height:2.6;padding:0 12px">
+      <div style="color:#FFD700;font-size:11px">Nyu &amp; Nje</div>
+      <div style="color:#FFD700;font-size:11px">menikah!</div>
+      <div style="color:#f9c0d0;font-size:8px;margin-top:4px">&hearts; Musim Mekarnya Rasa &hearts;</div>
+    </div>
+    <p style="font-family:'Press Start 2P',monospace;font-size:7px;color:#ffd6e0;text-align:center;line-height:2">WM:${collected.wm} CUP:${collected.cp}</p>
+    <button style="font-family:'Press Start 2P',monospace;font-size:8px;background:#ffd6e0;color:#5a1a2a;border:none;padding:8px 16px;cursor:pointer;touch-action:manipulation" onclick="overlayAction()">${btn}</button>`;
             ov.style.display = 'flex'; window._oa = cb;
         }
         window.overlayAction = function () { document.getElementById('overlay').style.display = 'none'; if (window._oa) window._oa(); };
