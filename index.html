@@ -37,10 +37,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 1rem 0;
+            padding: 1rem;
             gap: 10px;
             font-family: 'Press Start 2P', monospace;
-            min-height: 100vh
+            min-height: 100vh;
+            width: 100%;
         }
 
         #title {
@@ -80,13 +81,16 @@
 
         #canvas-wrap {
             position: relative;
-            touch-action: none
+            touch-action: none;
+            max-width: 100%;
         }
 
         canvas {
             display: block;
             border: 4px solid #5a2d1a;
-            touch-action: none
+            touch-action: none;
+            max-width: 100%;
+            height: auto;
         }
 
         #overlay {
